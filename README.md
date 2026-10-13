@@ -2,15 +2,13 @@
   <img src="assets/branding/PhotoStrike.png" alt="Original PhotoStrike butterfly logo" width="160" height="160">
 </p>
 
-# PhotoStrike
+<h1 align="center">PhotoStrike</h1>
 
-**by PWDS**
-
-**Build an image, layer by layer.**
+<p align="center"><strong>by PWDS</strong><br><strong>Build an image, layer by layer.</strong></p>
 
 PhotoStrike is a desktop workspace for raster images and editable layered documents. Compose an image in layers, save it as a `.pstrike` project, and export a PNG for use elsewhere.
 
-[Highlights](#highlights) · [Build and verification](#build-and-verification) · [Original artwork](assets/branding)
+<p align="center"><a href="#highlights">Highlights</a> · <a href="#build-and-verification">Build and verification</a> · <a href="assets/branding">Original artwork</a></p>
 
 ## Highlights
 
