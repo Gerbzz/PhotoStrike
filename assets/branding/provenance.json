@@ -1,0 +1,21 @@
+{
+  "app": "PhotoStrike",
+  "asset": "assets/branding/PhotoStrike.png",
+  "method": "Lossless rectangular extraction of original pixels with ImageMagick. No scaling, recoloring, tracing, generation, transparency fabrication or animal changes. Original cream outside rounded corners retained. Labels excluded.",
+  "coordinate_system": "Origin top-left; crop bounds [left, top, right, bottom), right/bottom exclusive.",
+  "source_sha256": "93e0c9b8f786a1d58051e65e3d964bd923967e99f699633ad365fcdcecf90aed",
+  "crop_bounds": [
+    32,
+    0,
+    688,
+    656
+  ],
+  "dimensions": [
+    656,
+    656
+  ],
+  "sha256": "374799ffc0eba86a284c2d0688f5463d8333c29fa10ffca4cde815eada3c86ba",
+  "decoded_rgb_sha256": "9df8068534dec53fdf6d6d8853f870407fab08c58a6aa4707689be72ddf2c40a",
+  "pixel_equality_verified": true,
+  "git_blob_sha": "d24951918c91c259557eb5cc57ddf4740f2f3ef5"
+}
