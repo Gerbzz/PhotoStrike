@@ -16,9 +16,9 @@ PhotoStrike is a desktop workspace for raster images and editable layered docume
 
 Windows alpha source. Synthetic native-control checks covered a two-layer save and reopen, PNG export, and several save guards. Interactive pointer and accessibility review, broad file compatibility, other platforms, and installer packaging remain open.
 
-## Make an image
+## What the project keeps
 
-Start with raster artwork, build a layered `.pstrike` document, and save it for later changes. Export a PNG when you need a flat image. The source and export are distinct files, so a finished image does not replace the editable document.
+A `.pstrike` file keeps the layered document editable, including its referenced layer assets. PNG export creates a separate flattened image. The bounded Windows checks reopened a two-layer project, confirmed the assets survived a round trip, and compared independent PNG exports; interactive editing still needs review.
 
 ## Build and verification
 
