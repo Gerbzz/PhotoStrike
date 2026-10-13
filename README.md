@@ -1,4 +1,26 @@
-# PhotoStrike Windows alpha
+# PhotoStrike
+
+**by PWDS**
+
+**Build an image, layer by layer.**
+
+PhotoStrike is a desktop workspace for raster images and editable layered documents. Compose an image in layers, save it as a `.pstrike` project, and export a PNG for use elsewhere.
+
+### Highlights
+
+- Keep image layers in an editable project.
+- Save and reopen `.pstrike` documents.
+- Export a finished PNG without changing the source project.
+
+## Current status
+
+Windows alpha source. Synthetic native-control checks covered a two-layer save and reopen, PNG export, and several save guards. Interactive pointer and accessibility review, broad file compatibility, other platforms, and installer packaging remain open.
+
+## Make an image
+
+Start with raster artwork, build a layered `.pstrike` document, and save it for later changes. Export a PNG when you need a flat image. The source and export are distinct files, so a finished image does not replace the editable document.
+
+## Build and verification
 
 PhotoStrike is a native Rust raster and layered-document editor adapted from PhotoCraft. The clean standalone Windows alpha source passed focused format and automation save-guard tests, 4/4 desktop save tests, and 10/10 save identity tests. Its rebuilt `photostrike.exe` passed a synthetic native-control regression covering two-layer `.pstrike` save/reopen, PNG export, external-edit and occupied-file guards, and malformed-file refusal. The earlier Windows acceptance also verified all four non-manifest assets survived a normal round trip and independent PNG exports were byte-identical. Interactive pointer and accessibility acceptance remain open.
 
