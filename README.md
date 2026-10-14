@@ -6,23 +6,35 @@
 
 <p align="center"><strong>by PWDS</strong><br><strong>Build an image, layer by layer.</strong></p>
 
-PhotoStrike is a desktop workspace for raster images and editable layered documents. Compose an image in layers, save it as a `.pstrike` project, and export a PNG for use elsewhere.
+<p align="center">A native desktop workspace for raster images and editable layered documents. Open an image, make changes in layers, keep a <code>.pstrike</code> master, and export a flat PNG when you need to share it.</p>
 
-<p align="center"><a href="#highlights">Highlights</a> · <a href="#build-and-verification">Build and verification</a> · <a href="assets/branding">Original artwork</a></p>
+<p align="center"><a href="#inside-the-workspace">Workspace</a> · <a href="#current-status">Current status</a> · <a href="#build-and-verification">Build</a> · <a href="SOURCE_SCOPE.md">Credits and source scope</a></p>
 
-## Highlights
+![The PhotoStrike desktop workspace with an original coastal study open on the canvas](assets/screenshots/photostrike-workspace.png)
 
-- Keep image layers in an editable project.
-- Save and reopen `.pstrike` documents.
-- Export a finished PNG without changing the source project.
+*The running Windows alpha, captured at 1440 × 900. The [coastal study](assets/screenshots/coastal-study.png) was made for this README; it is sample artwork, not a stock or client image.*
+
+## Inside the workspace
+
+### Keep the canvas editable
+
+The canvas, paint controls, color picker, document properties, and layer stack share one desktop window. In this example, an imported PNG sits beneath two new layers. The screenshot shows the actual saved `coastal-study.pstrike` project, with the layer stack visible.
+
+![PhotoStrike showing a saved layered project with Brush notes, Light studies, and Background layers](assets/screenshots/photostrike-layers.png)
+
+### Explore adjustments
+
+The Adjustments tab presents the current adjustment choices beside the canvas. This is a view of the running app; individual adjustment behavior and broad compatibility still need interactive review.
+
+![PhotoStrike with its Adjustments panel open beside the canvas](assets/screenshots/photostrike-adjustments.png)
+
+### Save a master, export a flat image
+
+Use `.pstrike` for the editable document. Reopening a saved project retains its separate layer assets; exporting PNG creates a flat image for use elsewhere. Bounded native-control checks reopened a two-layer project and compared independent PNG exports byte for byte. Save guards refuse changed or occupied destinations and malformed files, with the limits noted below.
 
 ## Current status
 
-Windows alpha source. Synthetic native-control checks covered a two-layer save and reopen, PNG export, and several save guards. Interactive pointer and accessibility review, broad file compatibility, other platforms, and installer packaging remain open.
-
-## What the project keeps
-
-A `.pstrike` file is the editable master: reopening it retains separate layer assets, while PNG export creates a flat image. Bounded checks reopened a two-layer project and compared independent exports. Save guards refuse changed or occupied destinations and malformed files; an operating-system overwrite prompt and a narrow concurrent-write race still need end-to-end review.
+PhotoStrike is **Windows alpha source**, not a packaged release. Synthetic native-control checks covered a two-layer save and reopen, PNG export, and several save guards. This README's screenshots were captured from a retained Windows executable whose Rust source matches the current source tree; subsequent manifest license metadata and Windows version-resource wording changes are not reflected in that binary. Interactive pointer and accessibility review, broad file compatibility, other platforms, and installer packaging remain open.
 
 ## Build and verification
 
