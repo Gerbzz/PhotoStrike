@@ -10,17 +10,17 @@
 
 <p align="center"><a href="#inside-the-workspace">Workspace</a> · <a href="#current-status">Current status</a> · <a href="#build-and-verification">Build</a> · <a href="SOURCE_SCOPE.md">Credits and source scope</a></p>
 
-![The PhotoStrike desktop workspace with an original coastal study open on the canvas](assets/screenshots/photostrike-workspace.png)
+![PhotoStrike showing the finished coastal poster with two visible type layers above the Background layer](assets/screenshots/photostrike-layers.png)
 
-*The running Windows alpha, captured at 1440 × 900. The [coastal study](assets/screenshots/coastal-study.png) was made for this README; it is sample artwork, not a stock or client image.*
+*The running Windows alpha with the saved, lettered coastal poster at 1440 × 900. The [coastal study](assets/screenshots/coastal-study.png) was made for this README; it is sample artwork, not a stock or client image. The title and caption are actual editable type layers.*
 
 ## Inside the workspace
 
 ### Keep the canvas editable
 
-The canvas, paint controls, color picker, document properties, and layer stack share one desktop window. In this example, an imported PNG sits beneath two editable type layers. The title and caption are visible on the canvas in the actual saved `coastal-study.pstrike` project.
+The canvas, paint controls, color picker, document properties, and layer stack share one desktop window. In this example, an imported PNG sits beneath two editable type layers. The earlier workspace state below shows the base art before the title and caption were added. The finished poster above is the actual saved `coastal-study.pstrike` project.
 
-![PhotoStrike showing a saved coastal poster with two visible type layers above the Background layer](assets/screenshots/photostrike-layers.png)
+![The PhotoStrike desktop workspace with the original coastal study before editable lettering was added](assets/screenshots/photostrike-workspace.png)
 
 ### Explore adjustments
 
