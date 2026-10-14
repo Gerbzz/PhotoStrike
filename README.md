@@ -4,7 +4,14 @@
 
 <h1 align="center">PhotoStrike</h1>
 
-<p align="center"><strong>by PWDS</strong><br><strong>Build an image, layer by layer.</strong></p>
+<p align="center">
+  <a href="https://prowebdevsolutions.com"><picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/branding/PWDS-logo-orange.svg">
+    <img src="assets/branding/PWDS-logo.png" alt="PWDS company logo" width="120">
+  </picture></a>
+</p>
+
+<p align="center"><strong>Build an image, layer by layer.</strong></p>
 
 <p align="center">A native desktop workspace for raster images and editable layered documents. Open an image, make changes in layers, keep a <code>.pstrike</code> master, and export a flat PNG when you need to share it.</p>
 
@@ -52,3 +59,7 @@ The Cargo package and internal crate names remain `photocraft-*` for compatibili
 The OS Save As overwrite prompt has not been clicked end-to-end. A narrow race remains between the final opened-file hash check and replacement rename when another process writes at the same time. RAW development and catalog integration with LightCraft, catalog search, and downloaded models are not implemented here. Other platforms, release packaging, and installers are not verified or supported by this candidate.
 
 See [SOURCE_SCOPE.md](SOURCE_SCOPE.md) for donor attribution, source ownership, and excluded artwork. No new first-party license grant is stated for PhotoStrike changes.
+
+## PWDS brand artwork
+
+The company mark in this masthead is the existing [official PWDS logo](https://github.com/Gerbzz/PWDS-Website/blob/main/public/prowebdevsolutions-logo.png), with the [official orange display asset](https://prowebdevsolutions.com/images/prowebdevsolutions-logo-orange.svg) for dark backgrounds. The app logo above it remains the original Strike suite artwork.
