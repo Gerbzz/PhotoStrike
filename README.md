@@ -18,15 +18,15 @@
 
 ### Keep the canvas editable
 
-The canvas, paint controls, color picker, document properties, and layer stack share one desktop window. In this example, an imported PNG sits beneath two new layers. The screenshot shows the actual saved `coastal-study.pstrike` project, with the layer stack visible.
+The canvas, paint controls, color picker, document properties, and layer stack share one desktop window. In this example, an imported PNG sits beneath two editable type layers. The title and caption are visible on the canvas in the actual saved `coastal-study.pstrike` project.
 
-![PhotoStrike showing a saved layered project with Brush notes, Light studies, and Background layers](assets/screenshots/photostrike-layers.png)
+![PhotoStrike showing a saved coastal poster with two visible type layers above the Background layer](assets/screenshots/photostrike-layers.png)
 
 ### Explore adjustments
 
-The Adjustments tab presents the current adjustment choices beside the canvas. This is a view of the running app; individual adjustment behavior and broad compatibility still need interactive review.
+The Adjustments tab offers image adjustment choices beside the canvas. The screenshot shows a new Brightness/Contrast adjustment layer with its mask selected in the layer stack. It does not demonstrate a tuned brightness or contrast result; individual adjustment behavior and broad compatibility still need interactive review.
 
-![PhotoStrike with its Adjustments panel open beside the canvas](assets/screenshots/photostrike-adjustments.png)
+![PhotoStrike showing a Brightness/Contrast adjustment layer and mask above the poster's type layers](assets/screenshots/photostrike-adjustments.png)
 
 ### Save a master, export a flat image
 
