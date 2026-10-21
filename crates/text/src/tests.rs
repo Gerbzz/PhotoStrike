@@ -9,6 +9,136 @@ fn point(text: &str, size_pt: f32) -> TextLayer {
     TextLayer { text: text.into(), font_family: "Inter".into(), size_pt, ..Default::default() }
 }
 
+#[test]
+fn text_rebuild_preserves_imported_font_metadata() {
+    use crate::engine_data::Value as E;
+    let layer = point("Original", 24.0);
+    let mut template = crate::psd::build_engine_data(&layer, None, 72.0);
+    for key in ["ResourceDict", "DocumentResources"] {
+        let fonts = template.get_mut(key).unwrap().get_mut("FontSet").unwrap();
+        let E::Array(fonts) = fonts else { panic!("font array") };
+        for font in fonts.iter_mut() {
+            font.set("Script", E::Int(4));
+            font.set("FontType", E::Int(2));
+            font.set("Synthetic", E::Int(3));
+            font.set("PrivateFontFlag", E::Int(17));
+        }
+    }
+    let expected = template.path(&["ResourceDict", "FontSet"]).unwrap().clone();
+    let mut edited = layer;
+    edited.text = "Edited".into();
+    let rebuilt = crate::psd::build_engine_data(&edited, Some(template), 72.0);
+    for key in ["ResourceDict", "DocumentResources"] {
+        assert_eq!(rebuilt.path(&[key, "FontSet"]), Some(&expected), "existing font metadata must survive a text edit");
+    }
+}
+
+#[test]
+fn font_metadata_survives_tysh_and_named_style_rewrites() {
+    use crate::engine_data::Value as E;
+    let source = point("Original", 24.0);
+    let mut tysh = crate::psd::parse_tysh(&crate::psd::build_tysh(&source, 72.0, None)).unwrap();
+    let mut data = crate::psd::engine_data(&tysh.text).unwrap();
+    for (key, marker) in [("ResourceDict", 17), ("DocumentResources", 29)] {
+        let E::Array(fonts) = data.get_mut(key).unwrap().get_mut("FontSet").unwrap() else { panic!("font array") };
+        for font in fonts {
+            font.set("PrivateFontFlag", E::Int(marker));
+            font.set("Script", E::Int(4));
+        }
+    }
+    for (key, value) in &mut tysh.text.items {
+        if key.as_bytes() == b"EngineData" {
+            *value = photocraft_psd::descriptor::Value::RawData(crate::engine_data::write(&data));
+        }
+    }
+    let raw = crate::psd::write_tysh(&tysh);
+    let mut imported = crate::psd::text_layer_from_tysh(&raw, 72.0).unwrap();
+    // The IO importer retains the raw block separately from the parsed text model.
+    imported.psd_raw = Some(raw.into());
+    imported.text = "Edited".into();
+    let rebuilt = crate::psd::build_tysh(&imported, 72.0, None);
+    let styled = crate::psd_styles::write_style_sheets(&rebuilt, &imported, &photocraft_doc::TextStyles::default(), 72.0).unwrap();
+    for bytes in [&rebuilt, &styled] {
+        let parsed = crate::psd::parse_tysh(bytes).unwrap();
+        let actual = crate::psd::engine_data(&parsed.text).unwrap();
+        for key in ["ResourceDict", "DocumentResources"] {
+            assert_eq!(actual.path(&[key, "FontSet"]), data.path(&[key, "FontSet"]));
+        }
+        assert_eq!(crate::psd::text_layer_from_tysh(bytes, 72.0).unwrap().text, "Edited");
+    }
+}
+
+#[test]
+fn font_metadata_append_reorder_and_duplicate_indices() {
+    use crate::engine_data::Value as E;
+    let record = |name: &str, marker| E::Dict(vec![("Name".into(), E::String(name.into())), ("PrivateFontFlag".into(), E::Int(marker))]);
+    let entries = vec![record("A", 1), record("A", 2), record("B", 3)];
+    let original = E::Array(entries.clone());
+    let names = ["A", "A", "B", "New"].map(str::to_string);
+    let result = crate::psd::font_set(&names, Some(&original));
+    let fonts = result.as_array().unwrap();
+    assert_eq!(&fonts[..3], entries.as_slice());
+    assert_eq!(fonts[3], crate::psd::font_entry("New"));
+    let reordered = crate::psd::font_set(&["B".into(), "A".into()], Some(&original));
+    assert_eq!(reordered, E::Array(vec![entries[2].clone(), entries[1].clone()]));
+    // A non-positional duplicate uses the first matching record, not the last map insertion.
+    let fallback = crate::psd::font_set(&["New".into(), "B".into(), "A".into()], Some(&original));
+    assert_eq!(fallback, E::Array(vec![crate::psd::font_entry("New"), entries[2].clone(), entries[0].clone()]));
+    let empty = record("", 9);
+    assert_eq!(crate::psd::font_set(&["".into()], Some(&E::Array(vec![E::Int(0), empty.clone()]))), E::Array(vec![empty]));
+    for malformed in [None, Some(&E::Int(0))] {
+        assert_eq!(crate::psd::font_set(&["New".into()], malformed), E::Array(vec![crate::psd::font_entry("New")]));
+    }
+}
+
+#[test]
+fn font_metadata_large_nameless_lists_rebuild_after_edit() {
+    use crate::engine_data::Value as E;
+    let mut layer = point("Original", 24.0);
+    let mut template = crate::psd::build_engine_data(&layer, None, 72.0);
+    for key in ["ResourceDict", "DocumentResources"] {
+        template.get_mut(key).unwrap().set("FontSet", E::Array(vec![E::Int(0); 10_000]));
+    }
+    layer.text = "Edited".into();
+    let rebuilt = crate::psd::build_engine_data(&layer, Some(template), 72.0);
+    for key in ["ResourceDict", "DocumentResources"] {
+        let fonts = rebuilt.path(&[key, "FontSet"]).unwrap().as_array().unwrap();
+        assert!(fonts.len() >= 10_000);
+        assert!(fonts[..10_000].iter().all(|font| *font == crate::psd::font_entry("")));
+    }
+}
+
+/// Same-runner release probe: compare the original and repaired source, not a wall-clock CI limit.
+#[test]
+#[ignore = "release performance measurement for large imported FontSets"]
+fn font_metadata_large_lists_timing() {
+    use crate::engine_data::Value as E;
+    for reordered in [false, true] {
+        let mut layer = point("Original", 24.0);
+        let mut template = crate::psd::build_engine_data(&layer, None, 72.0);
+        let n = 100_000;
+        for key in ["ResourceDict", "DocumentResources"] {
+            let entries = if reordered {
+                (0..n).map(|i| crate::psd::font_entry(&format!("Font{}", if key == "DocumentResources" { n - 1 - i } else { i }))).collect()
+            } else {
+                vec![E::Int(0); n]
+            };
+            template.get_mut(key).unwrap().set("FontSet", E::Array(entries));
+        }
+        layer.text = "Edited".into();
+        let mut times = Vec::new();
+        for _ in 0..3 {
+            let input = template.clone();
+            let start = std::time::Instant::now();
+            let result = crate::psd::build_engine_data(&layer, Some(input), 72.0);
+            std::hint::black_box(&result);
+            times.push(start.elapsed().as_secs_f64());
+        }
+        times.sort_by(f64::total_cmp);
+        println!("FONT_LOOKUP reordered={reordered} n={n} median_seconds={}", times[1]);
+    }
+}
+
 fn styled(text: &str, style: CharStyle) -> TextLayer {
     TextLayer { text: text.into(), runs: vec![TextRun { len: text.len(), style }], ..Default::default() }
 }
