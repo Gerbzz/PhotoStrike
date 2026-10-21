@@ -36,6 +36,6 @@ jobs:
       - name: Text library regressions
         run: cargo +1.95.0 test --locked -p photocraft-text --lib
       - name: PSD and PSB export regressions
-        run: cargo +1.95.0 test --locked -p photocraft-io --lib psd_export::tests::
+        run: 'cargo +1.95.0 test --locked -p photocraft-io --lib psd_export::tests::'
       - name: Document roundtrips
         run: cargo +1.95.0 test --locked -p photocraft-io --test roundtrip
