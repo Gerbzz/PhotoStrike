@@ -1243,6 +1243,20 @@ pub(crate) fn estimate_psd_size(doc: &Document) -> Option<u64> {
     estimate_encoded_size(raw_bytes, rows, structural_bytes)
 }
 
+/// The signature a kept tagged block is written with. `8B64` exists only in PSB files: a PSD
+/// with an `8B64` block (kept from a PSB source, e.g. its global `FMsk` or `cinf`) is refused by
+/// Photoshop as "not compatible with this version" (measured in Photoshop 27.11). The other way
+/// round, a PSB block with an 8-byte length is `8B64`, as Photoshop writes it: an `8BIM` `lnk2`,
+/// `pths` or `cinf` (kept from a PSD source, whose lengths the PSB widens) makes Photoshop read
+/// the length as 4 bytes and refuse the whole file (#7937).
+pub(crate) fn block_signature(sig: [u8; 4], key: [u8; 4], version: Version) -> [u8; 4] {
+    match version {
+        Version::Psd if sig == *b"8B64" => *b"8BIM",
+        Version::Psb if sig == *b"8BIM" && photocraft_psd::tagged::uses_long_length(version, &key) => *b"8B64",
+        _ => sig,
+    }
+}
+
 pub(crate) fn psd_version(doc: &Document, force_psb: bool, size_exceeds_limit: bool) -> Version {
     let exceeds_dimensions = doc.size.width > 30_000 || doc.size.height > 30_000;
     if force_psb || exceeds_dimensions || size_exceeds_limit { Version::Psb } else { Version::Psd }
@@ -1482,7 +1496,7 @@ fn document_to_psd_nested(doc: &Document, opts: &PsdExportOptions, depth: u32) -
             continue;
         }
         let mut tb = TaggedBlock::new(key, data.to_vec());
-        tb.signature = sig;
+        tb.signature = block_signature(sig, key, version);
         // Photoshop pads document-level (global) blocks to a multiple of 4, and readers such as
         // psd-tools step to the next block that way: an even pad after `CAI ` (77 bytes)
         // misaligned every block after it (#200).
@@ -1588,6 +1602,70 @@ mod tests {
 
     fn document(width: u32, height: u32) -> Document {
         Document::new("size estimate", photocraft_geom::Size::new(width, height), ColorMode::Rgb, SampleType::U8)
+    }
+
+    #[test]
+    fn kept_psb_blocks_are_written_as_8bim_in_a_psd() {
+        // Photoshop 27.11 refuses a PSD holding `8B64` blocks ("not compatible with this
+        // version"); they came from re-saving a PSB as PSD with its global FMsk and cinf kept.
+        let mut doc = document(4, 4);
+        doc.metadata.psd_global_blocks = vec![
+            (*b"8B64", *b"FMsk", std::sync::Arc::new(vec![0xff, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50])),
+            (*b"8BIM", *b"Patt", std::sync::Arc::new(Vec::new())),
+        ];
+        let signatures = |force_psb| {
+            let opts = PsdExportOptions { force_psb, ..PsdExportOptions::default() };
+            let bytes = document_to_psd_with(&doc, &opts).0.to_bytes().unwrap();
+            let file = PsdFile::from_bytes(&bytes).unwrap();
+            file.global_blocks.iter().map(|b| (b.signature, b.key)).collect::<Vec<_>>()
+        };
+        assert_eq!(signatures(false), vec![(*b"8BIM", *b"FMsk"), (*b"8BIM", *b"Patt")]);
+        assert_eq!(signatures(true), vec![(*b"8B64", *b"FMsk"), (*b"8BIM", *b"Patt")], "a PSB keeps 8B64");
+    }
+
+    #[test]
+    fn global_block_signatures_follow_all_psb_long_keys() {
+        for key in photocraft_psd::tagged::PSB_LONG_KEYS {
+            assert_eq!(block_signature(*b"8BIM", *key, Version::Psb), *b"8B64", "PSB key {key:?}");
+            assert_eq!(block_signature(*b"8B64", *key, Version::Psd), *b"8BIM", "PSD key {key:?}");
+            assert_eq!(block_signature(*b"8B64", *key, Version::Psb), *b"8B64");
+            assert_eq!(block_signature(*b"8BIM", *key, Version::Psd), *b"8BIM");
+        }
+        assert_eq!(block_signature(*b"8BIM", *b"Patt", Version::Psb), *b"8BIM");
+        assert_eq!(block_signature(*b"MIB8", *b"cinf", Version::Psb), *b"MIB8", "foreign byte-order blocks are kept as received");
+    }
+
+    /// A PSB writes every global block with an 8-byte length as `8B64`, the way Photoshop does:
+    /// kept from a PSD source, `lnk2`, `pths` and `cinf` arrive as `8BIM`, and with that signature
+    /// and the PSB's 8-byte length Photoshop 27.11 refused the whole file (#7937). Blocks with a
+    /// 4-byte length keep `8BIM`, and a PSD keeps `8BIM` throughout.
+    #[test]
+    fn psb_writes_long_length_blocks_as_8b64() {
+        let mut doc = document(4, 4);
+        doc.metadata.psd_global_blocks = vec![
+            (*b"8BIM", *b"cinf", std::sync::Arc::new(vec![0, 0, 0, 16, 0, 0, 0, 0])),
+            (*b"8BIM", *b"pths", std::sync::Arc::new(vec![0, 0, 0, 16, 0, 0, 0, 0])),
+            (*b"8BIM", *b"Patt", std::sync::Arc::new(Vec::new())),
+        ];
+        let written = |force_psb| {
+            let opts = PsdExportOptions { force_psb, ..PsdExportOptions::default() };
+            let bytes = document_to_psd_with(&doc, &opts).0.to_bytes().unwrap();
+            let file = PsdFile::from_bytes(&bytes).unwrap();
+            let blocks = file.global_blocks.iter().map(|b| (b.signature, b.key, b.data.len())).collect::<Vec<_>>();
+            (bytes, blocks)
+        };
+        let (bytes, blocks) = written(true);
+        assert_eq!(blocks, vec![(*b"8B64", *b"cinf", 8), (*b"8B64", *b"pths", 8), (*b"8BIM", *b"Patt", 0)]);
+        let parsed = PsdFile::from_bytes(&bytes).unwrap();
+        for (block, (_, key, data)) in parsed.global_blocks.iter().zip(&doc.metadata.psd_global_blocks) {
+            assert_eq!((&block.key, block.data.as_slice()), (key, data.as_slice()), "global block payload is preserved");
+        }
+        // On disk: the signature, the key, then the 8-byte length.
+        let at = bytes.windows(8).position(|w| w == b"8B64cinf").expect("8B64cinf in the file");
+        assert_eq!(bytes.get(at + 8..at + 16), Some(&[0u8, 0, 0, 0, 0, 0, 0, 8][..]));
+        assert!(!bytes.windows(8).any(|w| w == b"8BIMcinf" || w == b"8BIMpths"));
+        let (_, blocks) = written(false);
+        assert_eq!(blocks, vec![(*b"8BIM", *b"cinf", 8), (*b"8BIM", *b"pths", 8), (*b"8BIM", *b"Patt", 0)], "a PSD keeps 8BIM");
     }
 
     #[test]
