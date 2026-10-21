@@ -1,0 +1,41 @@
+name: File fidelity
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: file-fidelity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fidelity:
+    name: Fidelity (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Record tested revision
+        run: git rev-parse HEAD
+      - name: Install required Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Text library regressions
+        run: cargo +1.95.0 test --locked -p photocraft-text --lib
+      - name: PSD and PSB export regressions
+        run: cargo +1.95.0 test --locked -p photocraft-io --lib psd_export::tests::
+      - name: Document roundtrips
+        run: cargo +1.95.0 test --locked -p photocraft-io --test roundtrip
