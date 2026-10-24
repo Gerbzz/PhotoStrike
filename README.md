@@ -17,6 +17,12 @@
 
 <p align="center"><a href="#inside-the-workspace">Workspace</a> · <a href="#current-status">Current status</a> · <a href="#build-and-verification">Build</a> · <a href="SOURCE_SCOPE.md">Credits and source scope</a></p>
 
+## Rust direction and migration status
+
+- **Target:** A Rust-native raster and layered-document editor, extending the selected PhotoCraft foundation rather than rewriting its existing Rust core.
+- **Current implementation:** The [Cargo workspace](Cargo.toml) and [desktop entry point](apps/photocraft/src/main.rs) are already Rust, with PhotoStrike document, save-safety and desktop adaptations.
+- **Remaining migration:** Continue the Rust foundation work and validate broader format compatibility, native interaction, accessibility, other platforms and packaging. The Windows alpha is not a completed product or general compatibility claim.
+
 ![PhotoStrike showing the finished coastal poster with two visible type layers above the Background layer](assets/screenshots/photostrike-layers.png)
 
 *The running Windows alpha with the saved, lettered coastal poster at 1440 × 900. The [coastal study](assets/screenshots/coastal-study.png) was made for this README; it is sample artwork, not a stock or client image. The title and caption are actual editable type layers.*
