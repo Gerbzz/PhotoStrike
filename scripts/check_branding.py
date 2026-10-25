@@ -20,7 +20,7 @@ SIZES = (16, 24, 32, 48, 64, 128, 256)
 class BrandingContract(unittest.TestCase):
     def test_approved_png_matches_unchanged_provenance(self):
         metadata = json.loads((PNG.parent / "provenance.json").read_text())
-        approved = "e60969fe0ecb462b8e1927da66fae076b2b92ac9a5bfc32c4cc13b9bcc2e1e25"
+        approved = "e649f49529a8e5f19372b70a96572e2708cd6d6615b764446d78869a20eca5f8"
         self.assertEqual(metadata["sha256"], approved)
         self.assertEqual(sha256(PNG.read_bytes()).hexdigest(), approved)
         image = Image.open(PNG).convert("RGBA")

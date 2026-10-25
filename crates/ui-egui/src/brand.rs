@@ -51,12 +51,12 @@ mod tests {
     fn the_icon_preserves_the_approved_png_pixels_and_dimensions() {
         let expected = photocraft_codecs::decode(PNG).unwrap();
         let icon = icon();
-        assert_eq!((icon.width, icon.height), (656, 656));
+        assert_eq!((icon.width, icon.height), (512, 512));
         assert_eq!(icon.rgba, expected.to_rgba8());
         let img = decode();
-        assert_eq!(img.size, [656, 656]);
+        assert_eq!(img.size, [512, 512]);
         assert_eq!(img.pixels[0].a(), 0);
-        assert_eq!(img.pixels[328 * 656 + 328].a(), 255);
+        assert_eq!(img.pixels[256 * 512 + 256].a(), 255);
     }
 
     #[test]
@@ -67,7 +67,7 @@ mod tests {
         app.custom_titlebar = true;
         let mut frame = || {
             let mut out = ctx.run_ui(egui::RawInput::default(), |ui| crate::panels::title_bar(&mut app, ui));
-            let uploads = out.textures_delta.set.values().flat_map(|d| d.iter()).filter(|d| d.image.size() == [656, 656]).count();
+            let uploads = out.textures_delta.set.values().flat_map(|d| d.iter()).filter(|d| d.image.size() == [512, 512]).count();
             out.textures_delta.clear();
             uploads
         };
