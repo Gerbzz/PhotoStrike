@@ -533,6 +533,16 @@ fn main() -> eframe::Result {
 #[cfg(test)]
 mod tests {
     #[test]
+    fn native_options_bind_the_approved_window_icon() {
+        let options = super::native_options(super::CUSTOM_TITLEBAR);
+        let actual = options.viewport.icon.as_ref().expect("the window must have a branded icon");
+        let expected = photocraft_ui_egui::brand::icon();
+        assert_eq!((actual.width, actual.height), (656, 656));
+        assert_eq!(actual.rgba, expected.rgba);
+        assert_eq!(options.viewport.title.as_deref(), Some("PhotoStrike"));
+    }
+
+    #[test]
     fn window_and_panel_geometry_survive_a_restart() {
         let options = super::native_options(super::CUSTOM_TITLEBAR);
         assert!(options.persist_window);
