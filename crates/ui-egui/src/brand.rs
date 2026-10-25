@@ -1,40 +1,20 @@
-//! Interim PhotoStrike placeholder mark drawn in Rust, without donor-brand image assets.
-//! Replace it with the approved suite mark before any release packaging.
+//! The approved PhotoStrike butterfly shared by the title bar and native window.
 
 use egui::{Color32, Context, Id, Rect, TextureHandle, TextureOptions, Ui, pos2};
 
-const SIZE: usize = 128;
+/// The unchanged approved suite artwork; its exact bytes/provenance live beside the PNG.
+const PNG: &[u8] = include_bytes!("../../../assets/branding/PhotoStrike.png");
 
-/// Temporary rounded charcoal tile, lens ring, and warm shutter dot.
-pub fn icon_rgba() -> Vec<u8> {
-    let mut pixels = Vec::with_capacity(SIZE * SIZE * 4);
-    for row in 0..SIZE {
-        for col in 0..SIZE {
-            let x = (col as f32 + 0.5) / SIZE as f32;
-            let y = (row as f32 + 0.5) / SIZE as f32;
-            let cx = (x - 0.5).abs() - 0.31;
-            let cy = (y - 0.5).abs() - 0.31;
-            let outside = cx.max(0.0).hypot(cy.max(0.0)) - 0.18;
-            let alpha = ((-outside * SIZE as f32).clamp(0.0, 1.0) * 255.0) as u8;
-            let lens = (x - 0.50).hypot(y - 0.50);
-            let dot = (x - 0.70).hypot(y - 0.30);
-            let color = if dot < 0.055 {
-                [255, 178, 109]
-            } else if (0.235..0.285).contains(&lens) {
-                [110, 226, 210]
-            } else if lens < 0.185 {
-                [36, 75, 89]
-            } else {
-                [25, 31, 45]
-            };
-            pixels.extend_from_slice(&[color[0], color[1], color[2], alpha]);
-        }
-    }
-    pixels
+/// One decoded source for the native window and the title-bar texture. Derive dimensions from
+/// the asset rather than silently assuming the old placeholder's 128-pixel size.
+pub fn icon() -> egui::IconData {
+    let image = photocraft_codecs::decode(PNG).expect("the embedded approved PhotoStrike PNG must decode");
+    egui::IconData { rgba: image.to_rgba8(), width: image.width(), height: image.height() }
 }
 
 fn decode() -> egui::ColorImage {
-    egui::ColorImage::from_rgba_unmultiplied([SIZE, SIZE], &icon_rgba())
+    let icon = icon();
+    egui::ColorImage::from_rgba_unmultiplied([icon.width as usize, icon.height as usize], &icon.rgba)
 }
 
 fn texture(ctx: &Context) -> TextureHandle {
@@ -68,11 +48,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_icon_decodes_to_a_rounded_128_px_tile() {
+    fn the_icon_preserves_the_approved_png_pixels_and_dimensions() {
+        let expected = photocraft_codecs::decode(PNG).unwrap();
+        let icon = icon();
+        assert_eq!((icon.width, icon.height), (656, 656));
+        assert_eq!(icon.rgba, expected.to_rgba8());
         let img = decode();
-        assert_eq!(img.size, [128, 128]);
+        assert_eq!(img.size, [656, 656]);
         assert_eq!(img.pixels[0].a(), 0);
-        assert_eq!(img.pixels[64 * 128 + 64].a(), 255);
+        assert_eq!(img.pixels[328 * 656 + 328].a(), 255);
     }
 
     #[test]
@@ -83,7 +67,7 @@ mod tests {
         app.custom_titlebar = true;
         let mut frame = || {
             let mut out = ctx.run_ui(egui::RawInput::default(), |ui| crate::panels::title_bar(&mut app, ui));
-            let uploads = out.textures_delta.set.values().flat_map(|d| d.iter()).filter(|d| d.image.size() == [128, 128]).count();
+            let uploads = out.textures_delta.set.values().flat_map(|d| d.iter()).filter(|d| d.image.size() == [656, 656]).count();
             out.textures_delta.clear();
             uploads
         };

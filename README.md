@@ -47,7 +47,7 @@ Use `.pstrike` for the editable document. Reopening a saved project retains its 
 
 ## Current status
 
-PhotoStrike is **Windows alpha source**, not a packaged release. Synthetic native-control checks covered a two-layer save and reopen, PNG export, and several save guards. This README's screenshots were captured from a retained Windows executable whose Rust source matches the current source tree; subsequent manifest license metadata and Windows version-resource wording changes are not reflected in that binary. Interactive pointer and accessibility review, broad file compatibility, other platforms, and installer packaging remain open.
+PhotoStrike is **Windows alpha source**, not a packaged release. Synthetic native-control checks covered a two-layer save and reopen, PNG export, and several save guards. This README's screenshots are historical Windows-alpha captures from before the approved-logo runtime integration; they are not evidence of the current runtime branding. Current source uses the same approved butterfly as this masthead in the title bar and native window, with derived Windows executable icon sizes. Fresh native evidence is captured from the exact checked revision by the **Required native Windows branding** workflow job, separately from these historical images. Interactive pointer and accessibility review, broad file compatibility, other platforms, and installer packaging remain open.
 
 ## Build and verification
 
@@ -60,7 +60,7 @@ cargo build --locked -p photocraft --bin photostrike
 cargo run --locked -p photocraft --bin photostrike
 ```
 
-The Cargo package and internal crate names remain `photocraft-*` for compatibility. Its local workspace, lockfile, UI icons, fonts, dictionary, and contributor data are included. Optional `CRAFT_FONTS_DIR` fonts are not bundled. A fresh machine needs ordinary crates.io access for uncached dependencies. The clean standalone Windows build required successful version-resource compilation.
+The Cargo package and internal crate names remain `photocraft-*` for compatibility. Its local workspace, lockfile, UI icons, fonts, dictionary, and contributor data are included. Optional `CRAFT_FONTS_DIR` fonts are not bundled. A fresh machine needs ordinary crates.io access for uncached dependencies. The clean standalone Windows build required successful version-resource compilation. Current native-branding CI sets `PHOTOSTRIKE_REQUIRE_WINRES=1`, checks the compiled executable icon resources against the approved derivatives, and retains a new source-bound native capture; none of these checks establishes installer or release acceptance.
 
 The OS Save As overwrite prompt has not been clicked end-to-end. A narrow race remains between the final opened-file hash check and replacement rename when another process writes at the same time. RAW development and catalog integration with LightCraft, catalog search, and downloaded models are not implemented here. Other platforms, release packaging, and installers are not verified or supported by this candidate.
 
