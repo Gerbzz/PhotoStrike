@@ -56,7 +56,8 @@ mod tests {
         let img = decode();
         assert_eq!(img.size, [512, 512]);
         assert_eq!(img.pixels[0].a(), 0);
-        assert_eq!(img.pixels[256 * 512 + 256].a(), 255);
+        // The approved 512px handoff center is RGBA (7, 5, 6, 254), not fully opaque.
+        assert_eq!(img.pixels[256 * 512 + 256].a(), 254);
     }
 
     #[test]
