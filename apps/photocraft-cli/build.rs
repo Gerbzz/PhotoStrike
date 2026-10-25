@@ -7,7 +7,7 @@
 
 fn main() -> std::io::Result<()> {
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=../../assets/app-icon/photocraft.ico");
+    println!("cargo:rerun-if-changed=../../assets/branding/PhotoStrike.ico");
     println!("cargo:rerun-if-env-changed=PHOTOCRAFT_REQUIRE_WINRES");
     if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return Ok(());
@@ -16,7 +16,7 @@ fn main() -> std::io::Result<()> {
     // FileVersion / ProductVersion strings and the numeric FILEVERSION / PRODUCTVERSION are left
     // to `WindowsResource::new`, which reads the Cargo package version. A pre-release such as
     // `1.2.3-rc.1` stays in the strings; the numeric fields are `1.2.3.0`.
-    res.set_icon("../../assets/app-icon/photocraft.ico")
+    res.set_icon("../../assets/branding/PhotoStrike.ico")
         .set("ProductName", "PhotoCraft")
         .set("FileDescription", "PhotoCraft command-line interface")
         .set("CompanyName", "Learning Machines LLC")

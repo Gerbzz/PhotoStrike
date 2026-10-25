@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/branding/PhotoStrike.png" alt="Original PhotoStrike butterfly logo" width="160" height="160">
+  <img src="assets/branding/PhotoStrike.png" alt="Approved PhotoStrike butterfly logo" width="160" height="160">
 </p>
 
 <h1 align="center">PhotoStrike</h1>

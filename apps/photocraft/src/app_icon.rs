@@ -10,9 +10,9 @@ mod tests {
     fn window_icon_preserves_the_approved_mark() {
         let icon = super::window_icon();
         let expected = photocraft_ui_egui::brand::icon();
-        assert_eq!((icon.width, icon.height), (656, 656));
+        assert_eq!((icon.width, icon.height), (512, 512));
         assert_eq!(icon.rgba, expected.rgba);
-        assert_eq!(icon.rgba.len(), 656 * 656 * 4);
+        assert_eq!(icon.rgba.len(), 512 * 512 * 4);
         assert_eq!(icon.rgba[3], 0);
     }
 }

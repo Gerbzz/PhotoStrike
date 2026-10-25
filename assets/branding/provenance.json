@@ -1,70 +1,83 @@
 {
   "app": "PhotoStrike",
   "asset": "assets/branding/PhotoStrike.png",
-  "method": "Measured rounded alpha mask applied to the original 656x656 logo tile, then translated by whole pixels to center its visible bounds. Original visible RGB and masked visible RGBA were verified unchanged.",
-  "source_tile": {
-    "repository": "Gerbzz/PhotoStrike",
-    "commit": "5d55d4abdb0a8a93bf9875743dd7f674780af845",
-    "path": "assets/branding/PhotoStrike.png",
-    "sha256": "374799ffc0eba86a284c2d0688f5463d8333c29fa10ffca4cde815eada3c86ba",
-    "git_blob_sha": "d24951918c91c259557eb5cc57ddf4740f2f3ef5"
-  },
-  "mask_and_centering": {
-    "inset_pixels": 1.5,
-    "masked_alpha_bbox": [
-      10,
-      24,
-      632,
-      630
-    ],
-    "centered_alpha_bbox": [
-      17,
-      25,
-      639,
-      631
-    ],
-    "integer_translation": [
-      7,
-      1
-    ],
-    "padding_ltrb": [
-      17,
-      25,
-      17,
-      25
-    ],
-    "original_visible_rgb_exact": true,
-    "masked_visible_rgba_exact": true,
-    "transparent_corners": true
-  },
+  "method": "Exact approved 512x512 PNG from user-provided Strike-Logos-GitHub-2026-10-25 handoff. No crop, translation, recoloring or padding changes.",
+  "handoff_file": "approved/PhotoStrike/PhotoStrike-logo.png",
+  "sha256": "e649f49529a8e5f19372b70a96572e2708cd6d6615b764446d78869a20eca5f8",
   "dimensions": [
-    656,
-    656
+    512,
+    512
   ],
   "mode": "RGBA",
-  "sha256": "e60969fe0ecb462b8e1927da66fae076b2b92ac9a5bfc32c4cc13b9bcc2e1e25",
-  "decoded_rgba_sha256": "d43d2e99a2e43b055017dcad1ed468b8073afb826c2ec4e88b4e84160731765a",
-  "git_blob_sha": "b3834d6d654dedfdb7ee6776e361013a66f3c9bf",
-  "tool": "ImageMagick 7.1.2-34 Q16 x64",
-  "original_tile_provenance": {
+  "decoded_rgba_sha256": "35d5023333a4b7501e0840db642c627cd77f28c884bfd636c7b53b66dcb99b27",
+  "previous_provenance": {
     "app": "PhotoStrike",
     "asset": "assets/branding/PhotoStrike.png",
-    "method": "Lossless rectangular extraction of original pixels with ImageMagick. No scaling, recoloring, tracing, generation, transparency fabrication or animal changes. Original cream outside rounded corners retained. Labels excluded.",
-    "coordinate_system": "Origin top-left; crop bounds [left, top, right, bottom), right/bottom exclusive.",
-    "source_sha256": "93e0c9b8f786a1d58051e65e3d964bd923967e99f699633ad365fcdcecf90aed",
-    "crop_bounds": [
-      32,
-      0,
-      688,
-      656
-    ],
+    "method": "Measured rounded alpha mask applied to the original 656x656 logo tile, then translated by whole pixels to center its visible bounds. Original visible RGB and masked visible RGBA were verified unchanged.",
+    "source_tile": {
+      "repository": "Gerbzz/PhotoStrike",
+      "commit": "5d55d4abdb0a8a93bf9875743dd7f674780af845",
+      "path": "assets/branding/PhotoStrike.png",
+      "sha256": "374799ffc0eba86a284c2d0688f5463d8333c29fa10ffca4cde815eada3c86ba",
+      "git_blob_sha": "d24951918c91c259557eb5cc57ddf4740f2f3ef5"
+    },
+    "mask_and_centering": {
+      "inset_pixels": 1.5,
+      "masked_alpha_bbox": [
+        10,
+        24,
+        632,
+        630
+      ],
+      "centered_alpha_bbox": [
+        17,
+        25,
+        639,
+        631
+      ],
+      "integer_translation": [
+        7,
+        1
+      ],
+      "padding_ltrb": [
+        17,
+        25,
+        17,
+        25
+      ],
+      "original_visible_rgb_exact": true,
+      "masked_visible_rgba_exact": true,
+      "transparent_corners": true
+    },
     "dimensions": [
       656,
       656
     ],
-    "sha256": "374799ffc0eba86a284c2d0688f5463d8333c29fa10ffca4cde815eada3c86ba",
-    "decoded_rgb_sha256": "9df8068534dec53fdf6d6d8853f870407fab08c58a6aa4707689be72ddf2c40a",
-    "pixel_equality_verified": true,
-    "git_blob_sha": "d24951918c91c259557eb5cc57ddf4740f2f3ef5"
+    "mode": "RGBA",
+    "sha256": "e60969fe0ecb462b8e1927da66fae076b2b92ac9a5bfc32c4cc13b9bcc2e1e25",
+    "decoded_rgba_sha256": "d43d2e99a2e43b055017dcad1ed468b8073afb826c2ec4e88b4e84160731765a",
+    "git_blob_sha": "b3834d6d654dedfdb7ee6776e361013a66f3c9bf",
+    "tool": "ImageMagick 7.1.2-34 Q16 x64",
+    "original_tile_provenance": {
+      "app": "PhotoStrike",
+      "asset": "assets/branding/PhotoStrike.png",
+      "method": "Lossless rectangular extraction of original pixels with ImageMagick. No scaling, recoloring, tracing, generation, transparency fabrication or animal changes. Original cream outside rounded corners retained. Labels excluded.",
+      "coordinate_system": "Origin top-left; crop bounds [left, top, right, bottom), right/bottom exclusive.",
+      "source_sha256": "93e0c9b8f786a1d58051e65e3d964bd923967e99f699633ad365fcdcecf90aed",
+      "crop_bounds": [
+        32,
+        0,
+        688,
+        656
+      ],
+      "dimensions": [
+        656,
+        656
+      ],
+      "sha256": "374799ffc0eba86a284c2d0688f5463d8333c29fa10ffca4cde815eada3c86ba",
+      "decoded_rgb_sha256": "9df8068534dec53fdf6d6d8853f870407fab08c58a6aa4707689be72ddf2c40a",
+      "pixel_equality_verified": true,
+      "git_blob_sha": "d24951918c91c259557eb5cc57ddf4740f2f3ef5"
+    }
   }
 }

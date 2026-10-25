@@ -1,9 +1,11 @@
 # Approved PhotoStrike runtime artwork
 
-`PhotoStrike.png` is the existing approved suite butterfly, not a new logo. Its unchanged
-SHA-256 is `e60969fe0ecb462b8e1927da66fae076b2b92ac9a5bfc32c4cc13b9bcc2e1e25`.
-Its 656 × 656 RGBA pixels and original crop/mask/centering history remain documented in the
-unchanged `provenance.json` (restored in `5d55d4a`, centered in `c5ed0365`).
+`PhotoStrike.png` is the exact approved corrected suite butterfly from the
+user-provided `Strike-Logos-GitHub-2026-10-25` handoff. Its SHA-256 is
+`e649f49529a8e5f19372b70a96572e2708cd6d6615b764446d78869a20eca5f8`.
+The complete 512 × 512 RGBA canvas, centering and padding are unchanged. Current
+hashes are recorded in `provenance.json`; earlier crop/mask/centering history is
+retained under `previous_provenance` rather than attributed to the new artwork.
 
 - `crates/ui-egui/src/brand.rs` embeds those exact PNG bytes for the existing title-bar mark.
 - `apps/photocraft/src/app_icon.rs` gives the native window the same decoded pixels and dimensions.
@@ -24,7 +26,7 @@ software-compatibility-mode capture. The `native-proof.json` artifact records th
 source commit, binary/asset/capture hashes and capture method. Inspect that new PNG before
 claiming visible acceptance; older README screenshots are not new runtime evidence.
 
-No first-party license grant, release or installer is introduced. The donor CLI retains
-its original PhotoCraft identity/artwork as attributed source; it is not a PhotoStrike
-distribution. Installers, Linux desktop icon installation, macOS bundles, other platforms,
+No first-party license grant, release or installer is introduced. The retained CLI
+Windows resource now uses the same approved PhotoStrike ICO; its existing product
+identity and attribution are otherwise unchanged. This is not a new distribution. Installers, Linux desktop icon installation, macOS bundles, other platforms,
 interactive pointer/accessibility acceptance and release notices remain separate gates.
