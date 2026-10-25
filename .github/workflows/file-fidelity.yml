@@ -60,9 +60,9 @@ jobs:
       - name: Install image inspection dependency
         run: python -m pip install Pillow==12.3.0
       - name: Approved artwork and package-path contracts
-        run: |
-          python scripts/check_branding.py
-          python scripts/check_approved_branding.py
+        run: python scripts/check_branding.py
+      - name: Corrected handoff source contract
+        run: python scripts/check_approved_branding.py
       - name: Native title-bar texture and exact approved pixels
         run: 'cargo +1.95.0 test --locked -p photocraft-ui-egui --lib brand::tests::'
       - name: Native window binding regressions
