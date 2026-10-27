@@ -301,6 +301,48 @@ fn svgz_is_inflated_with_a_size_cap() {
     assert!(matches!(e, IoError::Svg(_)), "{e}");
 }
 
+/// A data URL of arbitrary bytes, for the embedded-SVG regression.
+fn data_url(mime: &str, bytes: &[u8]) -> String {
+    const T: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut out = format!("data:{mime};base64,");
+    for chunk in bytes.chunks(3) {
+        let n = chunk.len();
+        let v = (u32::from(chunk[0]) << 16) | (u32::from(*chunk.get(1).unwrap_or(&0)) << 8) | u32::from(*chunk.get(2).unwrap_or(&0));
+        for i in 0..4 {
+            out.push(if i <= n { T[((v >> (18 - 6 * i)) & 63) as usize] as char } else { '=' });
+        }
+    }
+    out
+}
+
+#[test]
+fn embedded_svgz_obeys_the_inflated_size_cap() {
+    let inner = format!("<svg {NS} width=\"4\" height=\"4\"><rect width=\"4\" height=\"4\" fill=\"#00ff00\"/></svg>");
+    let compressed = gzip(inner.as_bytes());
+    let outer = |mime: &str, bytes: &[u8]| {
+        let url = data_url(mime, bytes);
+        format!("<svg {NS} width=\"10\" height=\"10\"><image width=\"10\" height=\"10\" href=\"{url}\"/></svg>")
+    };
+    for mime in ["image/svg+xml", "text/plain"] {
+        let r = open(&outer(mime, &compressed));
+        assert!(r.document.layers.iter().any(|l| matches!(l.content, LayerContent::Raster(_))), "valid {mime} SVGZ must open");
+        assert!(close(px(&r.document, 5, 5), [0.0, 1.0, 0.0, 1.0]));
+    }
+    let mut bomb = format!("<svg {NS} width=\"4\" height=\"4\"><rect width=\"4\" height=\"4\"/>").into_bytes();
+    bomb.resize(usize::try_from(svg::MAX_INFLATED_BYTES).unwrap() + 1024, b' ');
+    bomb.extend_from_slice(b"</svg>");
+    let compressed = gzip(&bomb);
+    drop(bomb);
+    let mut accepted = Vec::new();
+    for mime in ["image/svg+xml", "text/plain"] {
+        let r = open(&outer(mime, &compressed));
+        if r.document.layers.iter().any(|l| matches!(l.content, LayerContent::Raster(_))) {
+            accepted.push(mime);
+        }
+    }
+    assert!(accepted.is_empty(), "over-cap embedded SVGZ decoded for {accepted:?}");
+}
+
 #[test]
 fn sniffed_without_an_extension_and_refused_when_malformed() {
     let svg = format!("<?xml version=\"1.0\"?>\n<svg {NS} width=\"8\" height=\"8\"><rect width=\"8\" height=\"8\"/></svg>");
