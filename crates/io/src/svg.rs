@@ -73,9 +73,21 @@ fn fonts() -> Arc<usvg::fontdb::Database> {
 /// fonts) is only loaded when the drawing may contain text.
 fn options(xml: &[u8]) -> usvg::Options<'static> {
     let has_text = xml.windows(4).any(|w| w == b"text");
+    let default_resolver = usvg::ImageHrefResolver::default_data_resolver();
+    let resolve_data: usvg::ImageHrefDataResolverFn<'static> = Box::new(move |mime, data, opts| {
+        // Bound embedded SVGZ before usvg's resolver can inflate it without a limit.
+        // Reject nested gzip so the resolver cannot perform a second inflation.
+        if (mime == "image/svg+xml" || mime == "text/plain") && data.starts_with(&[0x1f, 0x8b]) {
+            return match inflate(&data) {
+                Ok(xml) if !xml.starts_with(&[0x1f, 0x8b]) => default_resolver("image/svg+xml", Arc::new(xml.into_owned()), opts),
+                _ => None,
+            };
+        }
+        default_resolver(mime, data, opts)
+    });
     usvg::Options {
         resources_dir: None,
-        image_href_resolver: usvg::ImageHrefResolver { resolve_data: usvg::ImageHrefResolver::default_data_resolver(), resolve_string: Box::new(|_, _| None) },
+        image_href_resolver: usvg::ImageHrefResolver { resolve_data, resolve_string: Box::new(|_, _| None) },
         fontdb: if has_text { fonts() } else { Arc::new(usvg::fontdb::Database::new()) },
         ..usvg::Options::default()
     }
@@ -89,7 +101,9 @@ fn parse(bytes: &[u8]) -> Result<usvg::Tree, IoError> {
         return Err(IoError::Svg(format!("elements are nested more than {MAX_XML_DEPTH} levels deep")));
     }
     let opt = options(&xml);
-    usvg::Tree::from_data(&xml, &opt).map_err(|e| IoError::Svg(e.to_string()))
+    // `from_data` would inflate a nested gzip a second time without our size cap.
+    let text = std::str::from_utf8(&xml).map_err(|_| IoError::Svg("the SVG is not valid UTF-8".into()))?;
+    usvg::Tree::from_str(text, &opt).map_err(|e| IoError::Svg(e.to_string()))
 }
 
 /// The plain XML of `bytes`: itself, or the inflated content of a gzip `.svgz`, refused past
@@ -640,6 +654,33 @@ mod tests {
         assert!((b.in_ctrl.x - 20.0 / 3.0).abs() < 1e-9 && (b.in_ctrl.y - 20.0 / 3.0).abs() < 1e-9);
         assert_eq!(b.anchor, Point::new(10.0, 0.0));
         assert_eq!(sp[1].knots.len(), 2);
+    }
+
+    fn gzip_for_test(bytes: &[u8]) -> Vec<u8> {
+        use std::io::Write;
+        let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+        encoder.write_all(bytes).unwrap();
+        encoder.finish().unwrap()
+    }
+
+    #[test]
+    fn top_level_svgz_is_inflated_only_once() {
+        let svg = b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"/>";
+        let once = gzip_for_test(svg);
+        assert!(parse(&once).is_ok(), "ordinary SVGZ must still open");
+        let twice = gzip_for_test(&once);
+        assert!(parse(&twice).is_err(), "nested gzip must not reach usvg for another inflation");
+    }
+
+    #[test]
+    fn embedded_svgz_is_inflated_only_once() {
+        let svg = b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><rect width=\"4\" height=\"4\"/></svg>";
+        let once = gzip_for_test(svg);
+        let opt = options(b"<svg/>");
+        let resolve = &opt.image_href_resolver.resolve_data;
+        assert!(resolve("image/svg+xml", Arc::new(once.clone()), &opt).is_some(), "ordinary embedded SVGZ must still open");
+        let twice = gzip_for_test(&once);
+        assert!(resolve("image/svg+xml", Arc::new(twice), &opt).is_none(), "nested embedded gzip must be rejected");
     }
 
     #[test]

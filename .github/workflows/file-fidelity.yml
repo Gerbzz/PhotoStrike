@@ -39,6 +39,10 @@ jobs:
         run: 'cargo +1.95.0 test --locked -p photocraft-io --lib psd_export::tests::'
       - name: Document roundtrips
         run: cargo +1.95.0 test --locked -p photocraft-io --test roundtrip
+      - name: SVG parser regressions
+        run: 'cargo +1.95.0 test --locked -p photocraft-io --lib svg::tests::'
+      - name: SVG import regressions
+        run: cargo +1.95.0 test --locked -p photocraft-io --test svg
 
   required-native-windows:
     name: Required native Windows branding
