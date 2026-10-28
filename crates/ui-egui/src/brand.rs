@@ -2,8 +2,8 @@
 
 use egui::{Color32, Context, Id, Rect, TextureHandle, TextureOptions, Ui, pos2};
 
-/// The unchanged approved suite artwork; its exact bytes/provenance live beside the PNG.
-const PNG: &[u8] = include_bytes!("../../../assets/branding/PhotoStrike.png");
+/// The approved suite artwork; its source and decoded pixel hashes live beside the PNG.
+const PNG: &[u8] = include_bytes!("../../../assets/branding/PhotoStrike-current.png");
 
 /// One decoded source for the native window and the title-bar texture. Derive dimensions from
 /// the asset rather than silently assuming the old placeholder's 128-pixel size.
@@ -56,8 +56,8 @@ mod tests {
         let img = decode();
         assert_eq!(img.size, [512, 512]);
         assert_eq!(img.pixels[0].a(), 0);
-        // The approved 512px handoff center is RGBA (7, 5, 6, 254), not fully opaque.
-        assert_eq!(img.pixels[256 * 512 + 256].a(), 254);
+        // The approved current 512px artwork preserves its center alpha.
+        assert_eq!(img.pixels[256 * 512 + 256].a(), 253);
     }
 
     #[test]

@@ -83,7 +83,7 @@ def capture(executable, output):
                 proof = {
                     "source_commit": source,
                     "binary_sha256": sha256(executable.read_bytes()).hexdigest(),
-                    "approved_png_sha256": sha256((ROOT / "assets/branding/PhotoStrike.png").read_bytes()).hexdigest(),
+                    "approved_png_sha256": sha256((ROOT / "assets/branding/PhotoStrike-current.png").read_bytes()).hexdigest(),
                     "screenshot_sha256": sha256(png).hexdigest(),
                     "window": state["window"],
                     "capture": "Fresh native photostrike executable; existing ui.screenshot renderer readback; --safe-gpu software compatibility mode",
