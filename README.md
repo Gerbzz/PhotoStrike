@@ -47,7 +47,7 @@ Use `.pstrike` for the editable document. Reopening a saved project retains its 
 
 ## Current status
 
-PhotoStrike is **Windows alpha source**, not a packaged release. Synthetic native-control checks covered a two-layer save and reopen, PNG export, and several save guards. This README's screenshots are historical Windows-alpha captures from before the approved-logo runtime integration; they are not evidence of the current runtime branding. Current source uses the earlier approved butterfly branding in the title bar and native window, with derived Windows executable icon sizes; this README masthead uses the updated website icon. Fresh native evidence is captured from the exact checked revision by the **Required native Windows branding** workflow job, separately from these historical images. Interactive pointer and accessibility review, broad file compatibility, other platforms, and installer packaging remain open.
+PhotoStrike is **Windows alpha source**, not a packaged release. Synthetic native-control checks covered a two-layer save and reopen, PNG export, and several save guards. This README's screenshots are historical Windows-alpha captures from before the approved-logo runtime integration; they are not evidence of the current runtime branding. Current source uses the updated butterfly artwork in the title bar and native window, with derived Windows executable icon sizes matching this README masthead. Fresh native evidence is captured from the exact checked revision by the **Required native Windows branding** workflow job, separately from these historical images. Interactive pointer and accessibility review, broad file compatibility, other platforms, and installer packaging remain open.
 
 ## Build and verification
 

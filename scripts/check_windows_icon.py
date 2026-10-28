@@ -56,7 +56,7 @@ def read_resources(data):
 
 
 def check(executable):
-    data = (ROOT / "assets/branding/PhotoStrike.ico").read_bytes()
+    data = (ROOT / "assets/branding/PhotoStrike-current.ico").read_bytes()
     reserved, kind, count = struct.unpack_from("<HHH", data)
     assert (reserved, kind) == (0, 1)
     expected = {}
@@ -76,7 +76,7 @@ def check(executable):
         assert resources[(3, resource_id, group_key[-1])] == expected[frame], "compiled RT_ICON differs from approved derivative"
         matched.add(frame)
     assert matched == set(expected), "compiled icon sizes missing"
-    print(f"PASS: {count} compiled Windows icon frames exactly match PhotoStrike.ico")
+    print(f"PASS: {count} compiled Windows icon frames exactly match PhotoStrike-current.ico")
 
 
 if __name__ == "__main__":

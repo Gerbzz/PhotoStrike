@@ -6,13 +6,13 @@
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=../../assets/branding/PhotoStrike.ico");
+    println!("cargo:rerun-if-changed=../../assets/branding/PhotoStrike-current.ico");
     println!("cargo:rerun-if-env-changed=PHOTOSTRIKE_REQUIRE_WINRES");
     if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return;
     }
     let mut res = winresource::WindowsResource::new();
-    res.set_icon("../../assets/branding/PhotoStrike.ico")
+    res.set_icon("../../assets/branding/PhotoStrike-current.ico")
         .set("ProductName", "PhotoStrike")
         .set("FileDescription", "PhotoStrike raster editor")
         .set("CompanyName", "PhotoStrike contributors")
